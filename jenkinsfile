@@ -30,19 +30,7 @@ parameters {
                 }
             }
         }
-
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry([credentialsId: AWS_CREDENTIALS_ID, url: "https://aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com"]) {
-                        docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
-                    }
-                }
-            }
-        }
-
-        stage('Apply Terraform') {
+stage('Apply Terraform') {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: AWS_CREDENTIALS_ID, usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -57,6 +45,17 @@ parameters {
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: AWS_CREDENTIALS_ID, url: "https://aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com"]) {
+                        docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
+                    }
+                }
+            }
+        }
+
+        
         stage('Deploy to EKS') {
             steps {
                 script {
