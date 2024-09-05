@@ -1,18 +1,9 @@
 pipeline {
     agent any
-
-    parameters {
-        string(name: 'DOCKER_IMAGE_TAG', defaultValue: 'latest', description: 'Tag for Docker image')
-        string(name: 'AWS_REGION', defaultValue: '', description: 'AWS region for EKS and ECR')
-        string(name: 'TERRAFORM_WORKSPACE', defaultValue: 'default', description: 'Terraform workspace name')
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-        booleanParam(name: 'destroy', defaultValue: false, description: 'Destroy Terraform build?')
-    }
-
     environment {
         DOCKER_IMAGE = "aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com/flask-app"
         ECR_CREDENTIALS_ID = 'ecr-credentials'
-        KUBECONFIG_CREDENTIALS_ID = 'ek-kubeconfig'
+        KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
         AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
         TERRAFORM_BIN = '/usr/local/bin/terraform'
@@ -49,6 +40,10 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: AWS_CREDENTIALS_ID, usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                         sh '''
+                            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                            export AWS_DEFAULT_REGION=${params.AWS_REGION}
+                            cd ${TERRAFORM_DIR}
                             ${TERRAFORM_BIN} init -backend-config="workspace=${params.TERRAFORM_WORKSPACE}"
                             ${TERRAFORM_BIN} plan -var="aws_region=${params.AWS_REGION}"
                             ${TERRAFORM_BIN} apply -auto-approve -var="aws_region=${params.AWS_REGION}"
@@ -74,6 +69,6 @@ pipeline {
     }
 
     triggers {
-         githubPush()
+        pollSCM('H/5 * * * *')  // Polls for changes every 5 minutes
     }
 }
