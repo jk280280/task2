@@ -72,6 +72,6 @@ parameters {
     }
 
     triggers {
-        pollSCM('H/5 * * * *')  // Polls for changes every 5 minutes
+        githubPush()
     }
 }
