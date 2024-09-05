@@ -31,20 +31,6 @@ parameters {
             }
         }
 
-   stage('Apply Terraform') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: AWS_CREDENTIALS_ID, usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh '''
-                           
-                            ${TERRAFORM_BIN} init -backend-config="workspace=${params.TERRAFORM_WORKSPACE}"
-                            ${TERRAFORM_BIN} plan -var="aws_region=${params.AWS_REGION}"
-                            ${TERRAFORM_BIN} apply -auto-approve -var="aws_region=${params.AWS_REGION}"
-                        '''
-                    }
-                }
-            }
-        }
 
         stage('Push Docker Image') {
             steps {
