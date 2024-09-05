@@ -5,13 +5,15 @@ pipeline {
         string(name: 'DOCKER_IMAGE_TAG', defaultValue: 'latest', description: 'Tag for Docker image')
         string(name: 'AWS_REGION', defaultValue: '', description: 'AWS region for EKS and ECR')
         string(name: 'TERRAFORM_WORKSPACE', defaultValue: 'default', description: 'Terraform workspace name')
+        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+        booleanParam(name: 'destroy', defaultValue: false, description: 'Destroy Terraform build?')
     }
 
     environment {
         DOCKER_IMAGE = "aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com/flask-app"
         ECR_CREDENTIALS_ID = 'ecr-credentials'
         KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
-        AWS_CREDENTIALS_ID = 'aws-credentials'
+        AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
         TERRAFORM_BIN = '/usr/local/bin/terraform'
         KUBECTL_BIN = '/usr/local/bin/kubectl'
@@ -34,10 +36,9 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
-
-                }
+                withDockerRegistry([credentialsId: ECR_CREDENTIALS_ID, url: "https://aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com"]) {
+                        docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
+                    }
             }
         }
 
