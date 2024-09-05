@@ -31,15 +31,26 @@ parameters {
             }
         }
 
-    stage('Push Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry([credentialsId: ECR_CREDENTIALS_ID, url: "https://026090543905.dkr.ecr.${params.AWS_REGION}.amazonaws.com"]) {
-                        docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
-                    }
-                }
+   stage('Push Docker Image') {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                sh '''
+                    aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                    aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                    aws configure set region ${params.AWS_REGION}
+                    
+                    # Authenticate Docker to ECR
+                    aws ecr get-login-password --region ${params.AWS_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
+                    
+                    # Push Docker image to ECR
+                    docker push ${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}
+                '''
             }
         }
+    }
+}
+
   stage('Apply Terraform') {
             steps {
                 script {
