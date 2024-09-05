@@ -12,7 +12,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com/flask-app"
         ECR_CREDENTIALS_ID = 'ecr-credentials'
-        KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
+        KUBECONFIG_CREDENTIALS_ID = 'ek-kubeconfig'
         AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
         TERRAFORM_BIN = '/usr/local/bin/terraform'
