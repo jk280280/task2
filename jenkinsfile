@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = "aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com/flask-app"
-        ECR_CREDENTIALS_ID = 'ecr-credentials'
+        ECR_CREDENTIALS_ID = 'aws-cred'
         KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
         AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
