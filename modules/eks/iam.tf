@@ -8,7 +8,10 @@ resource "aws_iam_role" "eks" {
         Action    = "sts:AssumeRole"
         Effect    = "Allow"
         Principal = {
-          Service = "eks.amazonaws.com"
+          Service = [
+                    "eks.amazonaws.com",
+                    "ec2.amazonaws.com"
+                ]
         }
       }
     ]
@@ -30,3 +33,8 @@ resource "aws_iam_role_policy_attachment" "ec2" {
   policy_arn  = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+
+resource "aws_iam_role_policy_attachment" "cni_policy_attachment" {
+  role       = aws_iam_role.eks.name
+  policy_arn  = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
