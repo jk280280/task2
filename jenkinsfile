@@ -35,11 +35,9 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            steps {
-                script {
-           docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
-            }
-            }
+            withDockerRegistry([credentialsId: ECR_CREDENTIALS_ID, url: "https://aws_account_id.dkr.ecr.${params.AWS_REGION}.amazonaws.com"]) {
+                        docker.image("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}").push(params.DOCKER_IMAGE_TAG)
+                    }
         }
 
         stage('Apply Terraform') {
