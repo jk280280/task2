@@ -28,12 +28,12 @@ parameters {
             }
         }
 
-        stage('Docker Build'){
+       stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build --no-cache -t ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:latest -t ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:$BUILD_NUMBER .'
+                    docker.build("${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}")
                 }
-            }    
+            }
         }
       stage('Push Docker Image To ECR') {
             steps {
