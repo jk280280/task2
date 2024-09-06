@@ -9,6 +9,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "026090543905.dkr.ecr.${params.AWS_REGION}.amazonaws.com/flask-app"
+        AWS_REGION = 'us-east-1'
         ECR_CREDENTIALS_ID = 'ecr-credentials'
         KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
         AWS_CREDENTIALS_ID = 'aws-credentials'
