@@ -58,7 +58,6 @@ pipeline {
                steps {
                    script {
                        withEnv(["AWS_REGION=${AWS_REGION}"]) {
-                           cd main.tf
                            sh 'terraform init'
                            sh 'terraform apply -auto-approve'
                        }
