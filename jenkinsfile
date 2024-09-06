@@ -35,23 +35,21 @@ parameters {
                 }
             }    
         }
-        stage('Push Docker Image') {
-    steps {
-        script {
-            withCredentials([usernamePassword(credentialsId: 'ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                sh '''
-                    
-                    # Authenticate Docker to ECR
-                    aws ecr get-login-password --region ${params.AWS_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
-                    
-                    # Push Docker image to ECR
-                    docker push ${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}
-                '''
+        stage('Push Docker Image To ECR') {
+            steps {
+                sh '''/usr/bin/aws ecr get-login-password \
+                --region ${AWS_ECR_REGION} \
+                | docker login \
+                --username AWS \
+                --password-stdin ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com'''
+                
+                
+                sh 'docker push ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}'
+                sh 'docker push ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:$BUILD_NUMBER'
+                sh 'docker image rm ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:$BUILD_NUMBER'
+                sh 'docker image rm ${AWS_ECR_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:latest'
             }
         }
-    }
-}
-
 
 
   stage('Terraform Apply') {
