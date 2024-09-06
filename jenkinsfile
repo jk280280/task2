@@ -54,23 +54,17 @@ pipeline {
             }
         }
 
-        stage('Apply Terraform') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: AWS_CREDENTIALS_ID, usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh '''
-                            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                            export AWS_DEFAULT_REGION=${AWS_REGION}
-                            cd ${TERRAFORM_DIR}
-                            ${TERRAFORM_BIN} init -backend-config="workspace=${params.TERRAFORM_WORKSPACE}"
-                            ${TERRAFORM_BIN} plan -var="aws_region=${AWS_REGION}"
-                            ${TERRAFORM_BIN} apply -auto-approve -var="aws_region=${AWS_REGION}"
-                        '''
-                    }
-                }
-            }
-        }
+        stage('Terraform Apply') {
+               steps {
+                   script {
+                       withEnv(["AWS_REGION=${AWS_REGION}"]) {
+                           sh 'terraform init'
+                           sh 'terraform apply -auto-approve'
+                       }
+                   }
+               }
+           }
+
 
         stage('Deploy to EKS') {
             steps {
