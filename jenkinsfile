@@ -13,7 +13,7 @@ pipeline {
         ECR_CREDENTIALS_ID = 'ecr-credentials'
         DOCKER_IMAGE_TAG = 'latest'
         KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
-        AWS_CREDENTIALS_ID = 'aws-credentials'
+        AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
         TERRAFORM_BIN = '/usr/local/bin/terraform'
         KUBECTL_BIN = '/usr/local/bin/kubectl'
@@ -61,11 +61,11 @@ pipeline {
                         sh '''
                             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                            export AWS_DEFAULT_REGION=${params.AWS_REGION}
+                            export AWS_DEFAULT_REGION=${AWS_REGION}
                             cd ${TERRAFORM_DIR}
                             ${TERRAFORM_BIN} init -backend-config="workspace=${params.TERRAFORM_WORKSPACE}"
-                            ${TERRAFORM_BIN} plan -var="aws_region=${params.AWS_REGION}"
-                            ${TERRAFORM_BIN} apply -auto-approve -var="aws_region=${params.AWS_REGION}"
+                            ${TERRAFORM_BIN} plan -var="aws_region=${AWS_REGION}"
+                            ${TERRAFORM_BIN} apply -auto-approve -var="aws_region=${AWS_REGION}"
                         '''
                     }
                 }
@@ -88,6 +88,6 @@ pipeline {
     }
 
     triggers {
-        pollSCM('H/5 * * * *')  // Polls for changes every 5 minutes
+        githubPush()
     }
 }
