@@ -40,7 +40,7 @@ parameters {
                 script {
                     withCredentials([usernamePassword(credentialsId: ECR_CREDENTIALS_ID, usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                         sh '''
-                            $(aws ecr get-login-password --region ${params.AWS_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE})
+                            $(aws ecr get-login-password --region ${AWS_ECR_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE})
                             docker push ${DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}
                         '''
                     }
