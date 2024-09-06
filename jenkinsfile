@@ -54,7 +54,7 @@ parameters {
         }
     }
 }
-}
+
 
 
   stage('Terraform Apply') {
