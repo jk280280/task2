@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "eks" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_vpc_policy_attachment" {
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = aws_iam_role.eks.name
   policy_arn  = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
 }
 
