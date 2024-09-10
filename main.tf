@@ -19,7 +19,7 @@ module "eks" {
   source        = "./modules/eks"
   region        = var.region
  subnet_ids      = data.aws_subnets.default.ids
-  cluster_name  = "test-eks-cluster"
-  node_group_name = "my-node-group"
+  cluster_name  = "task-eks-cluster"
+  node_group_name = "task-node-group"
  }
 
