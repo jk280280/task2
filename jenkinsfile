@@ -98,7 +98,6 @@ pipeline {
                         // Update Kubeconfig to use the EKS cluster
                         sh '''
                         aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-                        kubectl version --client
                         kubectl apply -f k8s/deployment.yml
                         kubectl apply -f k8s/service.yml
                         '''
