@@ -86,13 +86,15 @@ pipeline {
                 script {
                     withAWS(credentials: AWS_CREDENTIALS_ID, region: AWS_REGION) {
                         // Update Kubeconfig to use the EKS cluster
-                        sh '''
+                        /*sh '''
                         aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-                        /* kubectl apply -f k8s/deployment.yml
-                        kubectl apply -f k8s/service.yml*/
-                      ${KUBECTL_BIN} apply -f k8s/deployment.yml
-                      ${KUBECTL_BIN} apply -f k8s/service.yml
-                        '''
+                        kubectl apply -f k8s/deployment.yml
+                        kubectl apply -f k8s/service.yml
+                        '''*/
+                    sh aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+                    sh "${KUBECTL_BIN} apply -f k8s/deployment.yml"
+                    sh "${KUBECTL_BIN} apply -f k8s/service.yml"
+                  
                     }
                 }
             }
