@@ -26,12 +26,18 @@ resource "aws_eks_node_group" "node" {
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.eks.arn
   subnet_ids      = data.aws_subnets.default.ids
+   capacity_type    = "ON_DEMAND"  # or "SPOT" if you prefer spot instances
+
   scaling_config {
     desired_size = 2
     max_size     = 3
     min_size     = 1
   }
-  instance_types = var.instance_types
+
+   tags = {
+    Name = "task-node-group"
+  }
 }
+
 
 
