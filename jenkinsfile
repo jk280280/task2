@@ -12,11 +12,12 @@ pipeline {
         AWS_REGION = 'us-east-1'
         ECR_CREDENTIALS_ID = 'ecr-credentials'
         DOCKER_IMAGE_TAG = 'latest'
-        KUBECONFIG_CREDENTIALS_ID = 'eks-kubeconfig'
+        KUBECONFIG_CREDENTIALS_ID = 'eks-credentials'
         AWS_CREDENTIALS_ID = 'aws-cred'
         TERRAFORM_DIR = 'terraform'
         TERRAFORM_BIN = '/usr/local/bin/terraform'
         KUBECTL_BIN = '/usr/local/bin/kubectl'
+        EKS_CLUSTER_NAME = 'task-eks-cluster'
     }
 
     stages {
@@ -54,16 +55,16 @@ pipeline {
             }
         }
 
-       // stage('Terraform Apply') {
-       //        steps {
-       //            script {
-       //                withEnv(["AWS_REGION=${AWS_REGION}"]) {
-       //                    sh 'terraform init'
-        //                   sh 'terraform apply -auto-approve'
-       //                }
-       //            }
-      //         }
-       //    }
+       /* stage('Terraform Apply') {
+               steps {
+                   script {
+                      withEnv(["AWS_REGION=${AWS_REGION}"]) {
+                          sh 'terraform init'
+                          sh 'terraform apply -auto-approve'
+                      }
+                  }
+             }
+         } 
 
 
         stage('Deploy to EKS') {
@@ -76,6 +77,21 @@ pipeline {
 
                     sh "${KUBECTL_BIN} apply -f k8s/deployment.yaml"
                     sh "${KUBECTL_BIN} apply -f k8s/service.yaml"
+                }
+            }
+        }*/
+
+ stage('Deploy to EKS') {
+            steps {
+                script {
+                    withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
+                        // Update Kubeconfig to use the EKS cluster
+                        sh '''
+                        aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
+                        '''
+                    }
                 }
             }
         }
