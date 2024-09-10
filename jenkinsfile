@@ -81,16 +81,6 @@ pipeline {
             }
         }*/
 
- stage('Install kubectl') {
-            steps {
-                sh '''
-                curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
-                chmod +x ./kubectl
-                 mv ./kubectl /usr/local/bin/kubectl
-                kubectl version --client
-                '''
-            }
-        }
  stage('Deploy to EKS') {
             steps {
                 script {
