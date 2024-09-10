@@ -75,8 +75,8 @@ pipeline {
                     }
                     writeFile(file: '/root/.kube/config', text: kubeconfig)
 
-                    sh "${KUBECTL_BIN} apply -f k8s/deployment.yaml"
-                    sh "${KUBECTL_BIN} apply -f k8s/service.yaml"
+                    sh "${KUBECTL_BIN} apply -f k8s/deployment.yml"
+                    sh "${KUBECTL_BIN} apply -f k8s/service.yml"
                 }
             }
         }*/
@@ -88,8 +88,8 @@ pipeline {
                         // Update Kubeconfig to use the EKS cluster
                         sh '''
                         aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
+                        kubectl apply -f k8s/deployment.yml
+                        kubectl apply -f k8s/service.yml
                         '''
                     }
                 }
