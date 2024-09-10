@@ -54,16 +54,16 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply') {
-               steps {
-                   script {
-                       withEnv(["AWS_REGION=${AWS_REGION}"]) {
-                           sh 'terraform init'
-                           sh 'terraform apply -auto-approve'
-                       }
-                   }
-               }
-           }
+       // stage('Terraform Apply') {
+       //        steps {
+       //            script {
+       //                withEnv(["AWS_REGION=${AWS_REGION}"]) {
+       //                    sh 'terraform init'
+        //                   sh 'terraform apply -auto-approve'
+       //                }
+       //            }
+      //         }
+       //    }
 
 
         stage('Deploy to EKS') {
